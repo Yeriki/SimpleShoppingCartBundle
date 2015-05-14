@@ -16,6 +16,9 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Money\Money,
     Money\Currency;
 
+use Quantity\Quantity,
+    Quantity\Unit;
+
 /**
  * Product
  *
@@ -24,8 +27,28 @@ use Money\Money,
  * @author Tom Haskins-Vaughan <tom@tomhv.uk>
  * @since  0.2.0
  */
-class Product// implements ProductInterface
+class Product implements ProductInterface
 {
+    /**
+     * sku
+     *
+     * @ORM\Column(
+     *     type="string",
+     *     nullable=true
+     * )
+     */
+    protected $sku;
+
+    /**
+     * name
+     *
+     * @ORM\Column(
+     *     type="string",
+     *     nullable=true
+     * )
+     */
+    protected $name;
+
     /**
      * price amount
      *
@@ -47,6 +70,88 @@ class Product// implements ProductInterface
      * )
      */
     protected $priceCurrency;
+
+    /**
+     * quantity amount
+     *
+     * @ORM\Column(
+     *     type="integer",
+     *     name="quantity_amount",
+     *     nullable=true
+     * )
+     */
+    protected $quantityAmount;
+
+    /**
+     * quantity unit
+     *
+     * @ORM\Column(
+     *     type="string",
+     *     name="quantity_unit",
+     *     nullable=true
+     * )
+     */
+    protected $quantityUnit;
+
+    /**
+     * Set sku
+     *
+     * @author Tom Haskins-Vaughan <tom@tomhv.uk>
+     * @since  0.3.0
+     *
+     * @param string $sku
+     *
+     * @return Product
+     */
+    public function setSku($sku)
+    {
+        $this->sku = $sku;
+
+        return $this;
+    }
+
+    /**
+     * Get sku
+     *
+     * @author Tom Haskins-Vaughan <tom@tomhv.uk>
+     * @since  0.3.0
+     *
+     * @return string
+     */
+    public function getSku()
+    {
+        return $this->sku;
+    }
+
+    /**
+     * Set name
+     *
+     * @author Tom Haskins-Vaughan <tom@tomhv.uk>
+     * @since  0.3.0
+     *
+     * @param string $name
+     *
+     * @return Product
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @author Tom Haskins-Vaughan <tom@tomhv.uk>
+     * @since  0.3.0
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
     /**
      * Set price
@@ -89,6 +194,50 @@ class Product// implements ProductInterface
         return new Money(
             $this->priceAmount,
             new Currency($this->priceCurrency)
+        );
+    }
+
+    /**
+     * Set quantity
+     *
+     * @author Tom Haskins-Vaughan <tom@tomhv.uk>
+     * @since  0.3.0
+     *
+     * @param Quantity $quantity
+     *
+     * @return Product
+     */
+    public function setQuantity(Quantity $quantity)
+    {
+        $this->quantityAmount = $quantity->getAmount();
+        $this->quantityUnit = $quantity->getUnit()->getName();
+
+        return $this;
+    }
+
+    /**
+     * Get quantity
+     *
+     * @author Tom Haskins-Vaughan <tom@tomhv.uk>
+     * @since  0.3.0
+     *
+     * @return Quantity
+     */
+    public function getQuantity()
+    {
+        // If we have no unit, we can't create a Money object to return
+        if (!$this->quantityUnit) {
+            return null;
+        }
+
+        // If we have a unit but no amount, just return zero
+        if (!$this->quantityAmount) {
+            return new Quantity(0, new Unit($this->quantityUnit));
+        }
+
+        return new Quantity(
+            $this->quantityAmount,
+            new Unit($this->quantityUnit)
         );
     }
 

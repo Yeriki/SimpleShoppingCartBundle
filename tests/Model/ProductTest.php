@@ -12,6 +12,9 @@ namespace Yeriki\SimpleShoppingCartBundle\Tests\Model;
 use Money\Money,
     Money\Currency;
 
+use Quantity\Quantity,
+    Quantity\Unit;
+
 use Yeriki\SimpleShoppingCartBundle\Model\Product;
 
 /**
@@ -22,6 +25,34 @@ use Yeriki\SimpleShoppingCartBundle\Model\Product;
  */
 class ProductTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * Test sku
+     *
+     * @author Tom Haskins-Vaughan <tom@tomhv.uk>
+     * @since  0.3.0
+     */
+    public function testSku()
+    {
+        $product = new Product();
+        $product->setSku('A001JH');
+
+        $this->assertSame('A001JH', $product->getSku());
+    }
+
+    /**
+     * Test name
+     *
+     * @author Tom Haskins-Vaughan <tom@tomhv.uk>
+     * @since  0.3.0
+     */
+    public function testName()
+    {
+        $product = new Product();
+        $product->setName('Banana Tree');
+
+        $this->assertSame('Banana Tree', $product->getName());
+    }
+
     /**
      * Test price is null by default
      *
@@ -49,6 +80,23 @@ class ProductTest extends \PHPUnit_Framework_TestCase
         $product->setPrice(new Money($amount, new Currency($currency)));
 
         $this->assertEquals($price, $product->getPrice());
+    }
+
+    /**
+     * Test quantity
+     *
+     * @author Tom Haskins-Vaughan <tom@tomhv.uk>
+     * @since  0.3.0
+     */
+    public function testQuantity()
+    {
+        $product = new Product();
+        $product->setQuantity(new Quantity(37, new Unit('each')));
+
+        $this->assertEquals(
+            new Quantity(37, new Unit('each')),
+            $product->getQuantity()
+        );
     }
 
     /**
