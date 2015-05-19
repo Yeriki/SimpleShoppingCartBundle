@@ -16,8 +16,9 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Money\Money,
     Money\Currency;
 
-use Quantity\Quantity,
-    Quantity\Unit;
+use Quantity\Amount,
+    Quantity\Quantity,
+    Quantity\Uom;
 
 /**
  * Product
@@ -91,7 +92,21 @@ class Product implements ProductInterface
      *     nullable=true
      * )
      */
-    protected $quantityUnit;
+    protected $quantityUom;
+
+    /**
+     * createdAt
+     *
+     * @Gedmo\Timestampable(on="create")
+     * @ORM\Column(type="datetime", name="created_at")
+     */
+    protected $createdAt;
+
+    /**
+     * @Gedmo\Timestampable(on="update")
+     * @ORM\Column(type="datetime", name="updated_at")
+     */
+    protected $updatedAt;
 
     /**
      * Set sku
@@ -210,7 +225,7 @@ class Product implements ProductInterface
     public function setQuantity(Quantity $quantity)
     {
         $this->quantityAmount = $quantity->getAmount();
-        $this->quantityUnit = $quantity->getUnit()->getName();
+        $this->quantityUom = $quantity->getUom()->getName();
 
         return $this;
     }
@@ -225,35 +240,21 @@ class Product implements ProductInterface
      */
     public function getQuantity()
     {
-        // If we have no unit, we can't create a Money object to return
-        if (!$this->quantityUnit) {
+        // If we have no Uom, we can't create a Quantity object to return
+        if (!$this->quantityUom) {
             return null;
         }
 
-        // If we have a unit but no amount, just return zero
+        // If we have a Uom but no amount, just return zero
         if (!$this->quantityAmount) {
-            return new Quantity(0, new Unit($this->quantityUnit));
+            return new Quantity(new Amount(1), new Uom($this->quantityUom));
         }
 
         return new Quantity(
             $this->quantityAmount,
-            new Unit($this->quantityUnit)
+            new Uom($this->quantityUom)
         );
     }
-
-    /**
-     * createdAt
-     *
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime", name="created_at")
-     */
-    protected $createdAt;
-
-    /**
-     * @Gedmo\Timestampable(on="update")
-     * @ORM\Column(type="datetime", name="updated_at")
-     */
-    protected $updatedAt;
 
     /**
      * Set createdAt

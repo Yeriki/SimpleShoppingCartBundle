@@ -12,10 +12,12 @@ namespace Yeriki\SimpleShoppingCartBundle\Tests\Model;
 use Money\Money,
     Money\Currency;
 
-use Quantity\Quantity,
-    Quantity\Unit;
+use Quantity\Amount,
+    Quantity\Quantity,
+    Quantity\Uom;
 
-use Yeriki\SimpleShoppingCartBundle\Model\Product;
+use Yeriki\SimpleShoppingCartBundle\Model\Product,
+    Yeriki\Fractions\Fraction;
 
 /**
  * ProductTest
@@ -91,10 +93,10 @@ class ProductTest extends \PHPUnit_Framework_TestCase
     public function testQuantity()
     {
         $product = new Product();
-        $product->setQuantity(new Quantity(37, new Unit('each')));
+        $product->setQuantity(Quantity::EACH(37));
 
         $this->assertEquals(
-            new Quantity(37, new Unit('each')),
+            Quantity::EACH(37),
             $product->getQuantity()
         );
     }
